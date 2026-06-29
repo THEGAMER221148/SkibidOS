@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Skibidoperating System</title>
+        <style>
+            body {
+                margin: 0%;
+                overflow: hidden;
+                font-family: monospace;
+                background-color: rgb(0, 0, 0);
+                position: fixed;
+                font-size: 20px;
+                line-height: 20px;
+            }
+            #terminal{
+                position: fixed;
+                width: 100%;
+                color: rgb(200, 200, 200);
+                margin: 0%;
+                white-space: pre-wrap;
+                bottom: 20px;
+            }
+            #input{
+                position: fixed;
+                width: 100%;
+                color: white;
+                margin: 0%;
+                white-space: pre;
+                bottom: 0px;
+                background-color: black;
+                font-size: 20px;
+                border: none;
+                height: 20px;
+                overflow: hidden;
+                font-family: monospace;
+            }
+            #editor {
+                position: fixed;
+                width: 100%;
+                color: rgb(200, 200, 200);
+                font-size: 20px;
+                line-height: 20px;
+                margin: 0%;
+                white-space: pre-wrap;
+                top: 20px;
+                left: 0px;
+                background-color: rgb(0, 0, 0);
+                height: 100%;
+                z-index: 998;
+                border: none;
+            }
+            #editorWindow {
+                visibility: hidden;
+            }
+            input:focus {
+                outline: none;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="terminal">Welcome to SkibidOS! If you don't know what to do, type "help"<br></div>
+        <input type="text" id="input" autocomplete="off" autocorrect="off" autocapitalize="off">
+        <div id="editorWindow">
+            <span style="color: rgb(0, 255, 0)" id="info">Blank editor (nothing you type here will be saved!)</span>
+            <textarea id="editor">Editor</textarea>
+        </div>
+        <script src="./main.js" type="module"></script>
+    </body>
+</html>
