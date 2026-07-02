@@ -21,6 +21,8 @@ function syntaxHighlight(text) {
 
     text = text.replace(/\b(true|false)\b/g, "<span style='color:rgb(255, 127, 20);'>$&</span>");
 
+    text = text.replace(/(_MOUSEX|_MOUSEY|_MOUSEDOWN|_KEY)/g, "<span style='color:rgb(255, 50, 50);'>$&</span>");
+
     return text;
 }
 

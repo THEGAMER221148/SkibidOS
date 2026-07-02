@@ -14,6 +14,31 @@ const commands = {
     }
 }
 
+// Key detection
+const keysDown = [];
+document.addEventListener("keydown", (ev) => {
+    keysDown.push(ev.key);
+});
+document.addEventListener("keyup", (ev) => {
+    keysDown.splice(keysDown.indexOf(ev.key), 1);
+});
+
+// Mouse detection
+let mouseX = 0;
+let mouseY = 0;
+let mouseDown = false;
+
+document.addEventListener("mousemove", (ev) => {
+    mouseX = ev.clientX;
+    mouseY = ev.clientY;
+});
+document.addEventListener("mousedown", (ev) => {
+    mouseDown = true;
+});
+document.addEventListener("mouseup", (ev) => {
+    mouseDown = false;
+});
+
 export default async function runCode(code) {
     const stack = [];
     const variables = {};
@@ -35,20 +60,19 @@ export default async function runCode(code) {
     }
 
     // Puch code to the stack and repeat line execution while there is still code in the stack
-    stack.push(...code.split(";").reverse());
+    stack.push(...code.split(";").reverse().filter(line => line !== ""));
     console.log(stack);
 
     while (stack.length > 0) {
-
         // Stop check
         if (window.stopSDOS) {
             document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 0, 0);'>Process terminated</span>\n`;
+            console.log(stack);
             return;
         }
 
         // Stack check
-
-        if (stack.length > 16384) {
+        if (stack.length > 65536) {
             document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 0, 0);'>Process terminated: Stack exceeded maximum value!</span>\n`;
             return;
         }
@@ -57,6 +81,15 @@ export default async function runCode(code) {
         if (line == "") continue; // Avoid blank lines
         const command = line.split(":")[0]; // Split the line into command and arguments
         let args = line.split(":")[1];
+
+        // Replace keywords in arguments
+        args = args.replaceAll("_MOUSEX", mouseX);
+        args = args.replaceAll("_MOUSEY", mouseY);
+        args = args.replaceAll("_MOUSEDOWN", mouseDown);
+        for (const key of keysDown) {
+            args = args.replaceAll(`_KEY${key}`, "true");
+        }
+        args = args.replace(/_KEY./g, "false");
 
         // Replace variable references in arguments
         for (const key of Object.keys(variables)) {
@@ -132,12 +165,12 @@ export default async function runCode(code) {
             
             // Run command - Runs a block. (run: <block reference>;)
             case "run":
-                stack.push(...(blocks[args[0]].split(";").reverse()));
+                stack.push(...(blocks[args[0]].split(";").reverse().filter(line => line !== "")));
                 continue;
 
             // If command - Runs a block if a condition is met (if: <condition>, <block reference>;)
             case "if":
-                if (args[0] === "true") stack.push(...(blocks[args[1]].split(";").reverse()));
+                if (args[0] === "true") stack.push(...(blocks[args[1]].split(";").reverse().filter(line => line !== "")));
                 continue;
 
             // Wait command - Pauses execution for a certain number of miliseconds (wait: <miliseconds>;)
@@ -151,7 +184,7 @@ export default async function runCode(code) {
 
             // Stop command - Stops execution (stop;)
             case "stop":
-                return;
+                return; 
 
             default:
                 break;
