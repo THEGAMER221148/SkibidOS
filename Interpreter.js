@@ -165,7 +165,11 @@ export default async function runCode(code) {
             
             // Run command - Runs a block. (run: <block reference>;)
             case "run":
-                stack.push(...(blocks[args[0]].split(";").reverse().filter(line => line !== "")));
+                try {
+                    stack.push(...(blocks[args[0]].split(";").reverse().filter(line => line !== "")));
+                } catch (err) {
+                    document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 0, 0);'>Fatal Error: Block reference is undefined. (${command}:${args.join(",")})</span>\n`;
+                }
                 continue;
 
             // If command - Runs a block if a condition is met (if: <condition>, <block reference>;)
