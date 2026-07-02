@@ -46,6 +46,13 @@ export default async function runCode(code) {
             return;
         }
 
+        // Stack check
+
+        if (stack.length > 16384) {
+            document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 0, 0);'>Process terminated: Stack exceeded maximum value!</span>\n`;
+            return;
+        }
+
         let line = stack.pop(); // Get the last line in the stack and remove it
         if (line == "") continue; // Avoid blank lines
         const command = line.split(":")[0]; // Split the line into command and arguments
