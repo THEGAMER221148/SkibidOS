@@ -2,10 +2,19 @@
 const commands = {
     print: (args) => { // print: <message>, <stay on line?: boolean>, <color: rgb>;
         document.getElementById("terminal").innerHTML += `${args[2] === undefined? "" : `<span style="color:${args[2]};">`}${args[0]}${args[2] === undefined? "" : `</span>`}${args[1] === "true"? "" : "\n"}`;
+    },
+    clearTerminal: (args) => {
+        document.getElementById("terminal").innerHTML = "";
+    },
+    stopAll: (args) => {
+        window.stopSDOS = true;
+        setTimeout(() => {
+            window.stopSDOS = false;
+        }, 20);
     }
 }
 
-export default function runCode(code) {
+export default async function runCode(code) {
     const stack = [];
     const variables = {};
     // Extract strings
@@ -30,6 +39,13 @@ export default function runCode(code) {
     console.log(stack);
 
     while (stack.length > 0) {
+
+        // Stop check
+        if (window.stopSDOS) {
+            document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 0, 0);'>Process terminated</span>\n`;
+            return;
+        }
+
         let line = stack.pop(); // Get the last line in the stack and remove it
         if (line == "") continue; // Avoid blank lines
         const command = line.split(":")[0]; // Split the line into command and arguments
@@ -102,8 +118,8 @@ export default function runCode(code) {
 
         // Special commands (must access objects only available within function scope)
         switch (command) {
-            // Variable command - Defines (or updates) variables. (var: <name>, <value;)
-            case "var":
+            // Define command - Defines (or updates) variables. (def: <name>, <value;)
+            case "def":
                 variables[args[0]] = args[1];
                 continue;
             
@@ -116,6 +132,20 @@ export default function runCode(code) {
             case "if":
                 if (args[0] === "true") stack.push(...(blocks[args[1]].split(";").reverse()));
                 continue;
+
+            // Wait command - Pauses execution for a certain number of miliseconds (wait: <miliseconds>;)
+            case "wait":
+                const waitMs = parseInt(args[0]);
+                const endTime = Date.now() + waitMs;
+                while (Date.now() < endTime && !window.stopSDOS) {
+                    await new Promise(resolve => setTimeout(resolve, Math.min(10, endTime - Date.now())));
+                }
+                continue;
+
+            // Stop command - Stops execution (stop;)
+            case "stop":
+                return;
+
             default:
                 break;
         }
