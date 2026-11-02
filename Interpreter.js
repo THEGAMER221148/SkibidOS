@@ -61,7 +61,6 @@ export default async function runCode(code) {
 
     // Puch code to the stack and repeat line execution while there is still code in the stack
     stack.push(...code.split(";").reverse().filter(line => line !== ""));
-    console.log(stack);
 
     while (stack.length > 0) {
         // Stop check
@@ -81,6 +80,10 @@ export default async function runCode(code) {
         if (line == "") continue; // Avoid blank lines
         const command = line.split(":")[0]; // Split the line into command and arguments
         let args = line.split(":")[1];
+        if (!args) {
+            document.getElementById("terminal").innerHTML += `\n<span style='color: rgb(255, 255, 0);'>Error: Arguments not found in line.</span>\n`;
+            continue;
+        }
 
         // Replace keywords in arguments
         args = args.replaceAll("_MOUSEX", mouseX);
