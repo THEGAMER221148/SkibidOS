@@ -164,6 +164,7 @@ export default async function runCode(code) {
             // Define command - Defines (or updates) variables. (def: <name>, <value;)
             case "def":
                 variables[args[0]] = args[1];
+                console.log(variables);
                 continue;
             
             // Run command - Runs a block. (run: <block reference>;)
@@ -189,7 +190,7 @@ export default async function runCode(code) {
                 }
                 continue;
 
-            // Stop command - Stops execution (stop;)
+            // Stop command - Stops execution (stop:;)
             case "stop":
                 return; 
 

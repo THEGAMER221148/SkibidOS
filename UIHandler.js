@@ -1,8 +1,12 @@
-import runCode from "./Interpreter.js";
+import runCode from "./interpreter.js";
 // get elements
 const inputLine = document.getElementById("input");
 const terminal = document.getElementById("terminal");
 const highlight = document.getElementById("highlight");
+
+// make history
+const history = [];
+let historySelection = 0;
 
 // highlist syntax (im not fixing that typo)
 inputLine.addEventListener("input", () => {
@@ -36,7 +40,16 @@ inputLine.onblur = function() {
 inputLine.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         runCode(inputLine.value);
+        history.push(inputLine.value);
         inputLine.value = "";
         highlight.innerHTML = "";
-    } 
+    }
+    if (event.key === "ArrowUp" && historySelection > 0) {
+        historySelection --;
+        inputLine.value = history[historySelection];
+    }
+    if (event.key === "ArrowDown" && historySelection < history.length - 1) {
+        historySelection ++;
+        inputLine.value = history[historySelection];
+    }
 });
